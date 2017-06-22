@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using React.AspNet;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +29,8 @@ namespace ReactDemo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddReact();
             // Add framework services.
             services.AddMvc();
         }
@@ -47,6 +51,12 @@ namespace ReactDemo
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            //Initializise ReactJS.NET. Must be before static files
+            app.UseReact(config => {
+                config
+                .AddScript("~/js/remarkable.min.js")
+                .AddScript("~/js/tutorial.jsx");
+            });
             app.UseStaticFiles();
 
             app.UseMvc(routes =>
